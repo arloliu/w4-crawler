@@ -106,7 +106,6 @@ Parser.WeixinParser = function(data)
 		if (imgSrc)
 		{
 			regex = /(.*)\?(.*)/;
-			console.log('img attr:' +  imgSrc);
 			var matched = imgSrc.match(regex);
 			if (matched && matched.length > 1)
 				imgSrc = matched[1];

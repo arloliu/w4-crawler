@@ -22,9 +22,9 @@
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://www.buzzfeed.com/nicholaswray/listhp-thity-bith#.vlowR2v4Q">
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://www.buzzfeed.com/leonoraepstein/amazing-nail-art-designs-2000s-girls-will-love#.tgRjKLZdd">
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://mp.weixin.qq.com/s?__biz=MzA5ODA1OTgyNw%3D%3D&mid=209420687&idx=2&sn=b809aafdf0e1af88fc94de666f1af495&scene=4#rd">
-			<input type="url" class="form-control" id="urlField" placeholder="Type URL here">
--->
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://mp.weixin.qq.com/s?__biz=MjM5NDAzMzQwMA==&mid=209586298&idx=3&sn=c48be850f334bf5000445dfe3dfc9316#rd">
+-->
+			<input type="url" class="form-control" id="urlField" placeholder="Type URL here">
 		</div>
 		<div class="form-group">
 			<label for="convertMethodField">簡繁轉換模式</label>

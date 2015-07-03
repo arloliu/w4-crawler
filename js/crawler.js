@@ -97,18 +97,23 @@ Parser.WeixinParser = function(data)
 			return;
 		}
 		var newObj = $('<img />');
-		var imgSrc = e.attr('data-src');
+		var imgSrc = e.attr('src');
 		if (!imgSrc)
+			imgSrc = e.attr('data-src');
+		else if (!imgSrc)
 			imgSrc = e.attr('rel:bf_image_src')
-		regex = /(.*)\?(.*)/;
-		
-		var matched = imgSrc.match(regex);
-		if (matched && matched.length > 1)
-			imgSrc = matched[1];
 
-		
-		newObj.attr('src', imgSrc);
-		e.replaceWith(newObj);
+		if (imgSrc)
+		{
+			regex = /(.*)\?(.*)/;
+			console.log('img attr:' +  imgSrc);
+			var matched = imgSrc.match(regex);
+			if (matched && matched.length > 1)
+				imgSrc = matched[1];
+
+			newObj.attr('src', imgSrc);
+			e.replaceWith(newObj);
+		}
 	});
 
 	// handle iframe tag

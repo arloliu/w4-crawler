@@ -221,7 +221,7 @@ Parser.ZhihuParser = function(url, data)
 	{
 		content = $('.zu-main-content-inner', data);
 	}
-	return "";
+
 	var removedClass =
 		".zm-votebar, .zm-item-meta, .zm-meta-panel, .zm-tag-editor, " +
 		".panel-container, .zh-answers-title, .zm-list-avatar, " +

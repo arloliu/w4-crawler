@@ -56,11 +56,14 @@ Parser.postCleaner = function(obj)
 	obj.find('script').remove();
 	obj.find('*').each(function() {
 		var subObj = $(this);
-		$.each(this.attributes, function() {
-			if (this.name.indexOf('rel') > -1 || this.name.indexOf('data-') > -1)
+
+		// clone attributes into array
+		var attributes = $.map(this.attributes, function(item) { return item.name;});
+
+		$.each(attributes, function(i, attr) {
+			if (attr.indexOf('rel') > -1 || attr.indexOf('data-') > -1)
 			{
-				//console.log("attr:%s=%s", this.name, this.value);
-				subObj.removeAttr(this.name);
+				subObj.removeAttr(attr);
 			}
 		});
 	});
@@ -80,7 +83,7 @@ Parser.getYoutubeEmbedTag = function(videoId, width, height)
 	return iframeStr;
 }
 
-Parser.WeixinParser = function(data)
+Parser.WeixinParser = function(url, data)
 {
 	var obj = $(data);
 	content = obj.find('#js_content');
@@ -136,7 +139,7 @@ Parser.WeixinParser = function(data)
 	return Parser.beautify(content.html());
 }
 
-Parser.BuzzFeedParser = function(data)
+Parser.BuzzFeedParser = function(url, data)
 {
 	var obj = $(data);
 	content = obj.find('#buzz_sub_buzz');
@@ -199,7 +202,40 @@ Parser.BuzzFeedParser = function(data)
 	Parser.postCleaner(content);
 
 	return Parser.beautify(content.html());
+}
 
+
+Parser.ZhihuParser = function(url, data)
+{
+	//var obj = $(data);
+	var content = '';
+	if (url.indexOf('#answer-') > -1)
+	{
+		var regex = /.*#(.*)/;
+		var matched = url.match(regex);
+		var answerId = matched[1];
+		var obj = $.parseHTML(data);
+		//var answerObj = $('a[name="' + answerId + '"]', data);
+		var answerObj = obj.find('a[name="' + answerId + '"]');
+		content = answerObj.parent();
+		answerObj.remove();
+	}
+	else
+	{
+		content = $('.zu-main-content-inner', data);
+	}
+	return "";
+	var removedClass =
+		".zm-votebar, .zm-item-meta, .zm-meta-panel, .zm-tag-editor, " +
+		".panel-container, .zh-answers-title, .zm-list-avatar, " +
+		".zh-question-answer-summary-wrap, .zm-item-vote-info," +
+		"a[name=\"collapse\"], " +
+		"#zh-question-collapsed-link, #zh-question-collapsed-wrap, #zh-question-answer-form-wrap";
+	content.find(removedClass).remove();
+
+	Parser.postCleaner(content);
+
+	return Parser.beautify(content.html());
 }
 
 // parser dispatcher
@@ -207,11 +243,15 @@ Parser.parsePage = function(url, data)
 {
 	if (url.indexOf("weixin") > -1)
 	{
-		return Parser.WeixinParser(data);
+		return Parser.WeixinParser(url, data);
 	}
-	if (url.indexOf("buzzfeed") > -1)
+	else if (url.indexOf("buzzfeed") > -1)
 	{
-		return Parser.BuzzFeedParser(data);
+		return Parser.BuzzFeedParser(url, data);
+	}
+	else if (url.indexOf("zhihu") > -1)
+	{
+		return Parser.ZhihuParser(url, data);
 	}
 	else
 	{
@@ -275,7 +315,8 @@ $(document).ready(function() {
 		}
 
 		var htmlCode = '';
-		$.getJSON('fetch.php', {url:urlValue},
+		var fetchApiUrl = 'fetch.php';
+		$.getJSON(fetchApiUrl, {url:urlValue},
 			function(data) {
 				if (data['result'] == false)
 				{

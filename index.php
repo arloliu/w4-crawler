@@ -13,7 +13,7 @@
 
 <body>
 <div id="main-container" class="container">
-	<h5 style="color:#999;">Current supported targets: BuzzFeed, Weixin</h5>
+	<h5 style="color:#999;">Current supported targets: BuzzFeed, Weixin, Zhihu</h5>
 	<form id="fetchForm" action="#">
 		<div  class="form-group">
 			<label for="urlField">Target URL</label>
@@ -23,6 +23,7 @@
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://www.buzzfeed.com/leonoraepstein/amazing-nail-art-designs-2000s-girls-will-love#.tgRjKLZdd">
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://mp.weixin.qq.com/s?__biz=MzA5ODA1OTgyNw%3D%3D&mid=209420687&idx=2&sn=b809aafdf0e1af88fc94de666f1af495&scene=4#rd">
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://mp.weixin.qq.com/s?__biz=MjM5NDAzMzQwMA==&mid=209586298&idx=3&sn=c48be850f334bf5000445dfe3dfc9316#rd">
+			<input type="url" class="form-control" id="urlField" placeholder="Type URL here" value="http://www.zhihu.com/question/20248668#answer-913416">
 -->
 			<input type="url" class="form-control" id="urlField" placeholder="Type URL here">
 		</div>

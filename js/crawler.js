@@ -207,16 +207,13 @@ Parser.BuzzFeedParser = function(url, data)
 
 Parser.ZhihuParser = function(url, data)
 {
-	//var obj = $(data);
 	var content = '';
 	if (url.indexOf('#answer-') > -1)
 	{
 		var regex = /.*#(.*)/;
 		var matched = url.match(regex);
 		var answerId = matched[1];
-		var obj = $.parseHTML(data);
-		//var answerObj = $('a[name="' + answerId + '"]', data);
-		var answerObj = obj.find('a[name="' + answerId + '"]');
+		var answerObj = $('a[name="' + answerId + '"]', data);
 		content = answerObj.parent();
 		answerObj.remove();
 	}

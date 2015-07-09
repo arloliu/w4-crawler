@@ -43,6 +43,15 @@ Parser.beautify = function(html)
 	return tidy_html5(html, options);
 }
 
+Parser.replaceTag = function (obj, oldTag, newTag)
+{
+	obj.find(oldTag).each(function(i) {
+		var newObj = $('<' + newTag + '>');
+		newObj.html($(this).html());
+		$(this).replaceWith(newObj);
+	});
+}
+
 Parser.convertCnToTw = function(data, convMethod, successCb)
 {
 	var url = "http://conv.nulldev.info/convert";
@@ -72,18 +81,20 @@ Parser.postCleaner = function(obj)
 Parser.getYoutubeEmbedTag = function(videoId, width, height)
 {
 	if (width == undefined)
-		width = 640;
+		width = 560;
 	if (height == undefined)
-		height = 360;
+		height = 315;
 	var embedUrl = 'https://www.youtube.com/embed/' + videoId + '?origin=http://wonder4.co';
 
+	width = 560;
+	height = 315;
 	var iframeStr = '<p><iframe type="text/html" width="' + width +
 		'" height="' + height +
-		'" src="' + embedUrl +'" frameborder="0"/></p>';
+		'" src="' + embedUrl +'" frameborder="0" allowfullscreen/></p>';
 	return iframeStr;
 }
 
-Parser.WeixinParser = function(url, data)
+Parser.WeixinParser = function(url, options, data)
 {
 	var obj = $(data);
 	content = obj.find('#js_content');
@@ -139,7 +150,7 @@ Parser.WeixinParser = function(url, data)
 	return Parser.beautify(content.html());
 }
 
-Parser.BuzzFeedParser = function(url, data)
+Parser.BuzzFeedParser = function(url, options, data)
 {
 	var obj = $(data);
 	content = obj.find('#buzz_sub_buzz');
@@ -206,6 +217,15 @@ Parser.BuzzFeedParser = function(url, data)
 		}
 	});
 
+	// replace h2 -> h3
+	Parser.replaceTag(content, 'h2', 'h3');
+
+	if (options['removeFormat'])
+	{
+		content.find('div').contents().unwrap();
+		content.find('span').contents().unwrap();
+	}
+
 	// remove empty tags
 	content.find('img:not([src]),video,span:empty,div.pinit,div.share-box,script').remove();
 
@@ -215,7 +235,7 @@ Parser.BuzzFeedParser = function(url, data)
 }
 
 
-Parser.ZhihuParser = function(url, data)
+Parser.ZhihuParser = function(url, options, data)
 {
 	var content = '';
 	if (url.indexOf('#answer-') > -1)
@@ -246,19 +266,19 @@ Parser.ZhihuParser = function(url, data)
 }
 
 // parser dispatcher
-Parser.parsePage = function(url, data)
+Parser.parsePage = function(url, options, data)
 {
 	if (url.indexOf("weixin") > -1)
 	{
-		return Parser.WeixinParser(url, data);
+		return Parser.WeixinParser(url, options, data);
 	}
 	else if (url.indexOf("buzzfeed") > -1)
 	{
-		return Parser.BuzzFeedParser(url, data);
+		return Parser.BuzzFeedParser(url, options, data);
 	}
 	else if (url.indexOf("zhihu") > -1)
 	{
-		return Parser.ZhihuParser(url, data);
+		return Parser.ZhihuParser(url, options, data);
 	}
 	else
 	{
@@ -295,9 +315,11 @@ $(document).ready(function() {
 	$('#processButton').click(function() {
 		var urlValue = $('#urlField').val();
 		var convertMethodValue = $('#convertMethodField').val();
+		var removeFormatValue = $('#removeFormatButton').prop("checked") ? true : false;
 
 		processStatus.html("Processing..");
 
+		console.log("removeFormatValue:" + removeFormatValue);
 
 		function convertSuccess(data, status, xhr)
 		{
@@ -332,8 +354,10 @@ $(document).ready(function() {
 					processStatus.html("Process Fail 1, can't fetch target page");
 					return true;
 				}
-
-				htmlCodeData = Parser.parsePage(urlValue, data['result']);
+				var parseOptions = {
+					'removeFormat' : removeFormatValue
+				}
+				htmlCodeData = Parser.parsePage(urlValue, parseOptions, data['result']);
 				Parser.convertCnToTw(htmlCodeData, convertMethodValue, convertSuccess);
 		})
 		.fail(function() {

@@ -188,16 +188,26 @@ Parser.BuzzFeedParser = function(url, data)
 	// process youtube embed
 	content.find('div.video-embed-big').each(function(i) {
 		var param = $.parseJSON($(this).attr('rel:bf_bucket_data'));
-		console.log('url:' + param['video']['url']);
-		var regex = /http:\/\/.*\/watch\?v=(.*)/;
-		var videoId = param['video']['url'].match(regex)[1];
-		var iframeStr = Parser.getYoutubeEmbedTag(videoId, param['video']['width'], param['video']['height']);
+		console.log('param:' + JSON.stringify(param));
 
-		$(this).find(':first').before(iframeStr);
+		var youtubeAttr = null;
+		if (param['video'] && param['video']['url'])
+			youtubeAttr = param['video'];
+		else if (param['progload_video'] && param['progload_video']['url'])
+			youtubeAttr = param['progload_video'];
+
+		if (youtubeAttr)
+		{
+			var regex = /http:\/\/.*\/watch\?v=(.*)/;
+			var videoId = youtubeAttr['url'].match(regex)[1];
+			var iframeStr = Parser.getYoutubeEmbedTag(videoId, youtubeAttr['width'], youtubeAttr['height']);
+
+			$(this).find(':first').before(iframeStr);
+		}
 	});
 
 	// remove empty tags
-	content.find('img:not([src]),span:empty,div.pinit,div.share-box,script').remove();
+	content.find('img:not([src]),video,span:empty,div.pinit,div.share-box,script').remove();
 
 	Parser.postCleaner(content);
 
@@ -317,7 +327,9 @@ $(document).ready(function() {
 			function(data) {
 				if (data['result'] == false)
 				{
-					processStatus.html("Process Fail, can't fetch target page");
+					console.log("urlValue:" + urlValue);
+					console.log("result:" + JSON.stringify(data));
+					processStatus.html("Process Fail 1, can't fetch target page");
 					return true;
 				}
 
@@ -325,7 +337,7 @@ $(document).ready(function() {
 				Parser.convertCnToTw(htmlCodeData, convertMethodValue, convertSuccess);
 		})
 		.fail(function() {
-			processStatus.html("Process Fail, can't fetch target page");
+			processStatus.html("Process Fail 2, can't fetch target page");
 		})
 
 	});
